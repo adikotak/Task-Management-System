@@ -2,11 +2,12 @@
 //  AppDelegate.m
 //  Task Management System
 //
-//  Created by Onam Jain on 01/07/15.
+//  Created by Aditya Kotak on 01/07/15.
 //  Copyright (c) 2015 HiTechOS. All rights reserved.
 //
 
 #import "AppDelegate.h"
+
 
 @interface AppDelegate ()
 
@@ -16,7 +17,13 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"top bar@3x.png"] forBarMetrics:UIBarMetricsDefault];
+
     // Override point for customization after application launch.
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSLog(@"%@",documentsDirectory);
+    [self copyDatabaseIfNeeded];
     return YES;
 }
 
@@ -40,6 +47,38 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (void) copyDatabaseIfNeeded {
+    
+    //Using NSFileManager we can perform many file system operations.
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    
+    NSString *dbPath = [self getDBPath];
+    BOOL success = [fileManager fileExistsAtPath:dbPath];
+    
+    if(!success) {
+        
+        NSString *defaultDBPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"tmsdb.sql"];
+        success = [fileManager copyItemAtPath:defaultDBPath toPath:dbPath error:&error];
+        
+        if (!success)
+            NSAssert1(0, @"Failed to create writable database file with message '%@'.", [error localizedDescription]);
+    }
+}
+
+- (NSString *) getDBPath
+{
+    //Search for standard documents using NSSearchPathForDirectoriesInDomains
+    //First Param = Searching the documents directory
+    //Second Param = Searching the Users directory and not the System
+    //Expand any tildes and identify home directories.
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory , NSUserDomainMask, YES);
+    NSString *documentsDir = [paths objectAtIndex:0];
+    //NSLog(@"dbpath : %@",documentsDir);
+    return [documentsDir stringByAppendingPathComponent:@"tmsdb.sql"];
 }
 
 @end

@@ -2,7 +2,7 @@
 //  AppDelegate.h
 //  Task Management System
 //
-//  Created by Onam Jain on 01/07/15.
+//  Created by Aditya Kotak on 01/07/15.
 //  Copyright (c) 2015 HiTechOS. All rights reserved.
 //
 
